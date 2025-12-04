@@ -19,6 +19,6 @@ func NewLinkRoutes(handler *handler.LinkHandler) *LinkRoutes {
 func (ur *LinkRoutes) Register(r *gin.RouterGroup) {
 	links := r.Group("/links")
 	{
-		links.GET("", ur.handler.TestHandler)
+		links.GET("/test", ur.handler.TestHandler)
 	}
 }
