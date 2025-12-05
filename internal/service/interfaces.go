@@ -6,7 +6,7 @@ import (
 )
 
 type LinkService interface {
-	CreateLink(ctx context.Context,url string) (dto.LinkDTO, error)
+	CreateLink(ctx context.Context,url string,alias string) (dto.LinkDTO, error)
 
 	GetAllLinks(ctx context.Context, page, limit int) ([]dto.LinkDTO, int64, bool, error)
 }

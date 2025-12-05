@@ -26,3 +26,5 @@ func DeterministicShort(url string, length int) string {
 	}
 	return code
 }
+
+
