@@ -217,6 +217,9 @@ const docTemplate = `{
                 "url"
             ],
             "properties": {
+                "alias": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string"
                 }

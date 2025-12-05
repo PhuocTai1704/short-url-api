@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	model "short-url-api/internal/models"
 
 	"gorm.io/gorm"
@@ -16,6 +17,18 @@ func NewSQLLinkRepo (db *gorm.DB) LinkRepo {
 	return  &SQLLinkRepo{
 		db: db,
 	}
+}
+
+func (r *SQLLinkRepo) IsCodeExist(ctx context.Context, code string) (bool, error) {
+	var link model.Link
+    err := r.db.Where("code = ?", code).Take(&link).Error
+    if err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return false, nil 
+        }
+        return false, err 
+    }
+    return true, nil 
 }
 
 func (r *SQLLinkRepo) Create(ctx context.Context, link *model.Link) error {

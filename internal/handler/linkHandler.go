@@ -48,7 +48,7 @@ func (h *LinkHandler) CreateLink(c *gin.Context) {
         return
     }
 
-    linkDTO, err := h.service.CreateLink(c.Request.Context(), rq.Url)
+    linkDTO, err := h.service.CreateLink(c.Request.Context(), rq.Url,rq.Alias)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
