@@ -56,6 +56,40 @@ func (h *LinkHandler) CreateLink(c *gin.Context) {
 
     c.JSON(http.StatusCreated, linkDTO)
 }
+
+// GetByLink godoc
+// @Summary      Lấy thông tin link theo short Link
+// @Description  Trả về thông tin chi tiết của link dựa vào short Link
+// @Tags         links
+// @Accept       json
+// @Produce      json
+// @Param        url   query     string  true   "Short Link"
+// @Success      200   {object}  dto.LinkDTO
+// @Failure      400   {object}  response.ErrorResponse
+// @Failure      404   {object}  response.ErrorResponse
+// @Router       /api/links/link [get]
+func (lk *LinkHandler) GetByLink(c *gin.Context) {
+    urlLink := c.Query("url")  // lấy ?url=
+
+    if urlLink == "" {
+        c.JSON(http.StatusBadRequest, response.ErrorResponse{
+            Message: "url query param is required",
+        })
+        return
+    }
+
+    linkDTO, err := lk.service.GetByLink(c.Request.Context(), urlLink)
+    if err != nil {
+        c.JSON(http.StatusNotFound, response.ErrorResponse{
+            Message: err.Error(),
+        })
+        return
+    }
+
+    c.JSON(http.StatusOK, linkDTO)
+}
+
+
 // GetAllLinks godoc
 // @Summary      Lấy danh sách link
 // @Description  Lấy danh sách link theo phân trang
