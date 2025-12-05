@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	model "short-url-api/internal/models"
+	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -33,6 +35,7 @@ func (r *SQLLinkRepo) FirstOrCreate(ctx context.Context, link *model.Link) error
     }
     return nil
 }
+
 func (r *SQLLinkRepo) GetByLink(ctx context.Context, urlLink string) (*model.Link, error) {
     var link model.Link
 	
@@ -47,6 +50,19 @@ func (r *SQLLinkRepo) GetByLink(ctx context.Context, urlLink string) (*model.Lin
     return &link, nil
 }
 
+func (r *SQLLinkRepo) GetByCode(ctx context.Context, code string) (*model.Link, error) {
+    var link model.Link
+	
+	err := r.db.WithContext(ctx).
+        Where("code = ?", code).
+        First(&link).Error
+
+    if err != nil {
+        return nil, err
+    }
+
+    return &link, nil
+}
 func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) {
 	var links []model.Link
 	var total int64
@@ -67,4 +83,14 @@ func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model
 	}
 
 	return links, total, nil
+}
+
+func (r *SQLLinkRepo) IncreaseClick(ctx context.Context, id uuid.UUID) error {
+    return r.db.WithContext(ctx).
+        Model(&model.Link{}).
+        Where("link_id = ?", id).
+        Updates(map[string]any{
+            "clicks":     gorm.Expr("clicks + 1"),
+            "last_click": time.Now(),
+        }).Error
 }

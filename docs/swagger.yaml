@@ -46,7 +46,26 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/links:
+  /{code}:
+    get:
+      description: Nhận mã short link và redirect người dùng đến URL gốc
+      parameters:
+      - description: Short link code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect đến URL gốc
+        "404":
+          description: Short link không tồn tại
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Chuyển hướng đến URL gốc bằng short link
+      tags:
+      - redirect
+  /links:
     get:
       consumes:
       - application/json
@@ -113,7 +132,7 @@ paths:
       summary: Create a short link
       tags:
       - links
-  /api/links/link:
+  /links/link:
     get:
       consumes:
       - application/json
@@ -142,7 +161,7 @@ paths:
       summary: Lấy thông tin link theo short Link
       tags:
       - links
-  /api/links/test:
+  /links/test:
     get:
       description: Test handler to check server
       produces:

@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	model "short-url-api/internal/models"
+
+	"github.com/google/uuid"
 )
 
 type LinkRepo interface {
@@ -11,6 +13,10 @@ type LinkRepo interface {
 	FirstOrCreate(ctx context.Context,link *model.Link) error
 
 	GetByLink(ctx context.Context, url string) (*model.Link, error)
-	
+
+	GetByCode(ctx context.Context, code string) (*model.Link, error)
+
 	GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) 
+
+	IncreaseClick(ctx context.Context, id uuid.UUID) error
 }

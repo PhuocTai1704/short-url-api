@@ -25,7 +25,7 @@ func NewLinkHandler(service service.LinkService) *LinkHandler {
 // @Tags links
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /api/links/test [get]
+// @Router /links/test [get]
 func (h *LinkHandler) TestHandler(c *gin.Context) {
     c.JSON(200, gin.H{
         "message": "OK!",
@@ -40,7 +40,7 @@ func (h *LinkHandler) TestHandler(c *gin.Context) {
 // @Success 201 {object} dto.LinkDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/links [post]
+// @Router /links [post]
 func (h *LinkHandler) CreateLink(c *gin.Context) {
     var rq request.RequestLink
     if err := c.ShouldBindJSON(&rq); err != nil {
@@ -67,8 +67,8 @@ func (h *LinkHandler) CreateLink(c *gin.Context) {
 // @Success      200   {object}  dto.LinkDTO
 // @Failure      400   {object}  response.ErrorResponse
 // @Failure      404   {object}  response.ErrorResponse
-// @Router       /api/links/link [get]
-func (lk *LinkHandler) GetByLink(c *gin.Context) {
+// @Router       /links/link [get]
+func (h *LinkHandler) GetByLink(c *gin.Context) {
     urlLink := c.Query("url")  // lấy ?url=
 
     if urlLink == "" {
@@ -78,7 +78,7 @@ func (lk *LinkHandler) GetByLink(c *gin.Context) {
         return
     }
 
-    linkDTO, err := lk.service.GetByLink(c.Request.Context(), urlLink)
+    linkDTO, err := h.service.GetByLink(c.Request.Context(), urlLink)
     if err != nil {
         c.JSON(http.StatusNotFound, response.ErrorResponse{
             Message: err.Error(),
@@ -101,7 +101,7 @@ func (lk *LinkHandler) GetByLink(c *gin.Context) {
 // @Success      200    {object}  response.LinkResponse
 // @Failure      400    {object}  response.ErrorResponse
 // @Failure      500    {object}  response.ErrorResponse
-// @Router       /api/links [get]
+// @Router       /links [get]
 func (h *LinkHandler) GetAllLinks(c *gin.Context) {
     ctx := c.Request.Context()
 
@@ -136,4 +136,27 @@ func (h *LinkHandler) GetAllLinks(c *gin.Context) {
         Limit:      limit,
         IsLastPage: isLast,
     })
+}
+
+// Redirect godoc
+// @Summary      Chuyển hướng đến URL gốc bằng short link
+// @Description  Nhận mã short link và redirect người dùng đến URL gốc
+// @Tags         redirect
+// @Param        code   path      string  true   "Short link code"
+// @Success      302    "Redirect đến URL gốc"
+// @Failure      404    {object}  response.ErrorResponse "Short link không tồn tại"
+// @Router       /{code} [get]
+func (h *LinkHandler) Redirect(ctx *gin.Context) {
+	code := ctx.Param("code")
+
+	url, err := h.service.GetUrlByCode(ctx.Request.Context(), code)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound,response.ErrorResponse{
+            Message: "Short link not found",
+        })
+		return
+	}
+
+	// Redirect 301 hoặc 302
+	ctx.Redirect(http.StatusFound, url)
 }

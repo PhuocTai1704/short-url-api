@@ -59,6 +59,22 @@ func (lk *linkService) GetByLink(ctx context.Context, urlLink string) (dto.LinkD
     }, nil
 }
 
+func (lk *linkService) GetUrlByCode(ctx context.Context, code string) (string, error) {
+    link, err := lk.repo.GetByCode(ctx, code)
+    if err != nil {
+        return "", err
+    }
+
+    // Tăng số lượt click + cập nhật last_click
+    err = lk.repo.IncreaseClick(ctx, link.ID)
+    if err != nil {
+        return "", err
+    }
+
+    return link.Url, nil
+}
+
+
 func (lk *linkService) GetAllLinks(ctx context.Context, page, limit int) ([]dto.LinkDTO, int64, bool, error) {
 
     links, total, err := lk.repo.GetAllLinks(ctx, page, limit)
@@ -81,3 +97,5 @@ func (lk *linkService) GetAllLinks(ctx context.Context, page, limit int) ([]dto.
 
     return linkDTOs, total, isLast, nil
 }
+
+
