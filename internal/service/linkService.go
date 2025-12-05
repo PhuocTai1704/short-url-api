@@ -42,9 +42,26 @@ func (lk *linkService) CreateLink(ctx context.Context, url string) (dto.LinkDTO,
 	}, nil
 }
 
-func (s *linkService) GetAllLinks(ctx context.Context, page, limit int) ([]dto.LinkDTO, int64, bool, error) {
+func (lk *linkService) GetByLink(ctx context.Context, urlLink string) (dto.LinkDTO, error) {
+    link, err := lk.repo.GetByLink(ctx, urlLink)
+    if err != nil {
+        return dto.LinkDTO{}, err
+    }
 
-    links, total, err := s.repo.GetAllLinks(ctx, page, limit)
+    return dto.LinkDTO{
+        ID:        link.ID,
+        Url:       link.Url,
+        Code:      link.Code,
+        Link:      link.Link,
+        Clicks:    link.Clicks,
+        LastClick: link.LastClick,
+        CreatedAt: link.CreatedAt,
+    }, nil
+}
+
+func (lk *linkService) GetAllLinks(ctx context.Context, page, limit int) ([]dto.LinkDTO, int64, bool, error) {
+
+    links, total, err := lk.repo.GetAllLinks(ctx, page, limit)
     if err != nil {
         return nil, 0,true, err
     }

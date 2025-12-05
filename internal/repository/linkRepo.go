@@ -33,7 +33,19 @@ func (r *SQLLinkRepo) FirstOrCreate(ctx context.Context, link *model.Link) error
     }
     return nil
 }
+func (r *SQLLinkRepo) GetByLink(ctx context.Context, urlLink string) (*model.Link, error) {
+    var link model.Link
+	
+	err := r.db.WithContext(ctx).
+        Where("link = ?", urlLink).
+        First(&link).Error
 
+    if err != nil {
+        return nil, err
+    }
+
+    return &link, nil
+}
 
 func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) {
 	var links []model.Link

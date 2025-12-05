@@ -116,6 +116,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/links/link": {
+            "get": {
+                "description": "Trả về thông tin chi tiết của link dựa vào short Link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Lấy thông tin link theo short Link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short Link",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LinkDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/links/test": {
             "get": {
                 "description": "Test handler to check server",
