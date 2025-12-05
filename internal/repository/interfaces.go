@@ -8,6 +8,9 @@ import (
 )
 
 type LinkRepo interface {
+
+	IsCodeExist(ctx context.Context, code string) (bool, error)
+
 	Create(ctx context.Context,link *model.Link) error
 	
 	FirstOrCreate(ctx context.Context,link *model.Link) error
