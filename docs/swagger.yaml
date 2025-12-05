@@ -115,6 +115,35 @@ paths:
       summary: Create a short link
       tags:
       - links
+  /api/links/link:
+    get:
+      consumes:
+      - application/json
+      description: Trả về thông tin chi tiết của link dựa vào short Link
+      parameters:
+      - description: Short Link
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LinkDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Lấy thông tin link theo short Link
+      tags:
+      - links
   /api/links/test:
     get:
       description: Test handler to check server

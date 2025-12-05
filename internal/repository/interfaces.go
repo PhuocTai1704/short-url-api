@@ -13,5 +13,7 @@ type LinkRepo interface {
 	
 	FirstOrCreate(ctx context.Context,link *model.Link) error
 
+	GetByLink(ctx context.Context, url string) (*model.Link, error)
+	
 	GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) 
 }
