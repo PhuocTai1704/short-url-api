@@ -17,6 +17,8 @@ func NewLinkRoutes(handler *handler.LinkHandler) *LinkRoutes {
 }
 
 func (ur *LinkRoutes) Register(r *gin.RouterGroup) {
+	r.GET("/:code", ur.handler.Redirect)
+
 	links := r.Group("/links")
 	{
 		links.GET("/test", ur.handler.TestHandler)
