@@ -11,7 +11,6 @@ import (
 type Link struct {
     ID        uuid.UUID `json:"linkId" gorm:"column:link_id;type:char(36);primaryKey"`
 
-    Name      string    `json:"name"`
     Url       string    `json:"url" gorm:"unique;not null"`
     Code      string    `json:"code" gorm:"unique;not null"`
 

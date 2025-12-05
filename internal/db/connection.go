@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"short-url-api/internal/config"
+	model "short-url-api/internal/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -52,5 +53,12 @@ func InitDB() error {
 	}
 
 	log.Println("Connected to MySQL successfully!")
+
+	if err := DB.AutoMigrate(&model.Link{}); err != nil {
+		return fmt.Errorf("failed to migrate DB: %w", err)
+	}
+
+	log.Println("Database migrated successfully!")
+
 	return nil
 }

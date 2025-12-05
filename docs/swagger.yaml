@@ -1,6 +1,63 @@
+definitions:
+  dto.LinkDTO:
+    properties:
+      clicks:
+        type: integer
+      code:
+        type: string
+      createdAt:
+        type: string
+      lastClick:
+        type: string
+      linkId:
+        type: string
+      url:
+        type: string
+    type: object
+  request.RequestLink:
+    properties:
+      url:
+        type: string
+    required:
+    - url
+    type: object
 info:
   contact: {}
 paths:
+  /api/links:
+    post:
+      consumes:
+      - application/json
+      description: Generate a short URL from a long URL
+      parameters:
+      - description: URL to shorten
+        in: body
+        name: link
+        required: true
+        schema:
+          $ref: '#/definitions/request.RequestLink'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.LinkDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a short link
+      tags:
+      - links
   /api/links/test:
     get:
       description: Test handler to check server
