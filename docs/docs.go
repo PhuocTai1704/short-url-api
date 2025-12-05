@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/links": {
+        "/links": {
             "get": {
                 "description": "Lấy danh sách link theo phân trang",
                 "consumes": [
@@ -116,7 +116,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/links/link": {
+        "/links/link": {
             "get": {
                 "description": "Trả về thông tin chi tiết của link dựa vào short Link",
                 "consumes": [
@@ -160,7 +160,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/links/test": {
+        "/links/test": {
             "get": {
                 "description": "Test handler to check server",
                 "produces": [
@@ -178,6 +178,35 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/{code}": {
+            "get": {
+                "description": "Nhận mã short link và redirect người dùng đến URL gốc",
+                "tags": [
+                    "redirect"
+                ],
+                "summary": "Chuyển hướng đến URL gốc bằng short link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short link code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirect đến URL gốc"
+                    },
+                    "404": {
+                        "description": "Short link không tồn tại",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
                         }
                     }
                 }
