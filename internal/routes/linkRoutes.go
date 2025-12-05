@@ -20,6 +20,7 @@ func (ur *LinkRoutes) Register(r *gin.RouterGroup) {
 	links := r.Group("/links")
 	{
 		links.GET("/test", ur.handler.TestHandler)
+		links.GET("",ur.handler.GetAllLinks)
 		links.POST("",ur.handler.CreateLink)
 	}
 }

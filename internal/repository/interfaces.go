@@ -1,9 +1,14 @@
 package repository
 
-import model "short-url-api/internal/models"
+import (
+	"context"
+	model "short-url-api/internal/models"
+)
 
 type LinkRepo interface {
-	Create(link *model.Link) error
+	Create(ctx context.Context,link *model.Link) error
 	
-	FirstOrCreate(link *model.Link) error
+	FirstOrCreate(ctx context.Context,link *model.Link) error
+
+	GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) 
 }

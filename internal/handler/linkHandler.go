@@ -3,7 +3,9 @@ package handler
 import (
 	"net/http"
 	"short-url-api/internal/payloads/request"
+	"short-url-api/internal/payloads/response"
 	"short-url-api/internal/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,11 +48,58 @@ func (h *LinkHandler) CreateLink(c *gin.Context) {
         return
     }
 
-    linkDTO, err := h.service.CreateLink(c, rq.Url)
+    linkDTO, err := h.service.CreateLink(c.Request.Context(), rq.Url)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
 
     c.JSON(http.StatusCreated, linkDTO)
+}
+// GetAllLinks godoc
+// @Summary      Lấy danh sách link
+// @Description  Lấy danh sách link theo phân trang
+// @Tags         links
+// @Accept       json
+// @Produce      json
+// @Param        page   query     int     false  "Trang hiện tại"      default(1)
+// @Param        limit  query     int     false  "Số item mỗi trang"   default(10)
+// @Success      200    {object}  response.LinkResponse
+// @Failure      400    {object}  response.ErrorResponse
+// @Failure      500    {object}  response.ErrorResponse
+// @Router       /api/links [get]
+func (h *LinkHandler) GetAllLinks(c *gin.Context) {
+    ctx := c.Request.Context()
+
+    page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+    if err != nil || page <= 0 {
+        c.JSON(http.StatusBadRequest, response.ErrorResponse{
+            Message: "invalid page",
+        })
+        return
+    }
+
+    limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+    if err != nil || limit <= 0 {
+        c.JSON(http.StatusBadRequest, response.ErrorResponse{
+            Message: "invalid limit",
+        })
+        return
+    }
+
+    links, total, isLast, err := h.service.GetAllLinks(ctx, page, limit)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, response.ErrorResponse{
+            Message: err.Error(),
+        })
+        return
+    }
+
+    c.JSON(http.StatusOK, response.LinkResponse{
+        Data:       links,
+        Total:      total,
+        Page:       page,
+        Limit:      limit,
+        IsLastPage: isLast,
+    })
 }

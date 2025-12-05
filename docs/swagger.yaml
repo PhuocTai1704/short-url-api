@@ -9,6 +9,8 @@ definitions:
         type: string
       lastClick:
         type: string
+      link:
+        type: string
       linkId:
         type: string
       url:
@@ -21,10 +23,63 @@ definitions:
     required:
     - url
     type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  response.LinkResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.LinkDTO'
+        type: array
+      isLastPage:
+        type: boolean
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
   /api/links:
+    get:
+      consumes:
+      - application/json
+      description: Lấy danh sách link theo phân trang
+      parameters:
+      - default: 1
+        description: Trang hiện tại
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Số item mỗi trang
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LinkResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Lấy danh sách link
+      tags:
+      - links
     post:
       consumes:
       - application/json

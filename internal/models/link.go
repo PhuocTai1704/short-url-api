@@ -13,6 +13,7 @@ type Link struct {
 
     Url       string    `json:"url" gorm:"unique;not null"`
     Code      string    `json:"code" gorm:"unique;not null"`
+    Link      string    `json:"link" gorm:"not null"`
 
     Clicks    uint64     `json:"clicks" gorm:"default:0"`
     LastClick *time.Time `json:"lastClick"`
