@@ -34,13 +34,17 @@ func NewLinkHandler(service service.LinkService) *LinkHandler {
 func (h *LinkHandler) CreateLink(c *gin.Context) {
     var rq request.RequestLink
     if err := c.ShouldBindJSON(&rq); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        c.JSON(http.StatusBadRequest, response.ErrorResponse{
+            Message: err.Error(),
+        })
         return
     }
 
     linkDTO, err := h.service.CreateLink(c.Request.Context(), rq.Url,rq.Alias)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        c.JSON(http.StatusInternalServerError, response.ErrorResponse{
+            Message: err.Error(),
+        })
         return
     }
 
