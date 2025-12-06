@@ -77,6 +77,9 @@ func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, url
 
 func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.LinkDTO, error) {
 	domain := os.Getenv("DOMAIN_SHORT")
+	if !utils.ValidateURL(url) {
+		return dto.LinkDTO{}, fmt.Errorf("url không hợp lệ")
+	}
 	var link model.Link
 	link.Url = url
 

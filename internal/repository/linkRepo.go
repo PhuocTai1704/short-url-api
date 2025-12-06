@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	model "short-url-api/internal/models"
 	"short-url-api/internal/payloads/dto"
 	"time"
@@ -112,7 +113,7 @@ func (r *SQLLinkRepo) IncreaseClick(ctx context.Context, id uuid.UUID) error {
 func (r *SQLLinkRepo) GetLinkWithStatsByLink(ctx context.Context, urlLink string) (*dto.LinkDTO, error) {
 	var dto dto.LinkDTO
 
-	err := r.db.
+	tx := r.db.
 		WithContext(ctx).
 		Table("links AS l").
 		Select(`
@@ -127,10 +128,14 @@ func (r *SQLLinkRepo) GetLinkWithStatsByLink(ctx context.Context, urlLink string
 		Joins("LEFT JOIN link_clicks AS c ON c.link_id = l.link_id").
 		Where("l.link = ?", urlLink).
 		Group("l.link_id").
-		Scan(&dto).Error
+		Scan(&dto)
 
-	if err != nil {
-		return nil, err
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return nil, fmt.Errorf("url không tồn tại")
 	}
 
 	return &dto, nil

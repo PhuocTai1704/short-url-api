@@ -2,9 +2,10 @@ package utils
 
 import (
 	"crypto/sha1"
+	"net/url"
 	"os"
+	"strings"
 )
-
 
 func GetEnv(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
@@ -27,4 +28,35 @@ func DeterministicShort(url string, length int) string {
 	return code
 }
 
+func ValidateURL(input string) bool {
+	domain := os.Getenv("DOMAIN_SHORT")
 
+	input = strings.TrimSpace(input)
+	if input == "" {
+		return false
+	}
+
+	// Không cho phép rút gọn URL của chính hệ thống
+	if strings.HasPrefix(input, domain) {
+		return false
+	}
+
+	u, err := url.ParseRequestURI(input)
+	if err != nil {
+		return false
+	}
+
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return false
+	}
+
+	if u.Host == "" {
+		return false
+	}
+
+	if strings.ContainsAny(input, ` <>"{}|\^`+"`") {
+		return false
+	}
+
+	return true
+}
