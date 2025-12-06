@@ -77,6 +77,7 @@ func (r *SQLLinkRepo) GetByCode(ctx context.Context, code string) (*model.Link, 
 
 	return &link, nil
 }
+
 func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) {
 	var links []model.Link
 	var total int64
@@ -170,4 +171,20 @@ func (r *SQLLinkRepo) GetLinkWithStatsById(ctx context.Context, id uuid.UUID) (*
 	}
 
 	return &dto, nil
+}
+
+func (r *SQLLinkRepo) DeleteById(ctx context.Context, id uuid.UUID) error {
+	result := r.db.WithContext(ctx).
+		Where("link_id = ?", id).
+		Delete(&model.Link{})
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("link not found")
+	}
+
+	return nil
 }

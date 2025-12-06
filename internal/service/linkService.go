@@ -161,3 +161,13 @@ func (lk *linkService) GetAllLinks(ctx context.Context, page, limit int) ([]dto.
 
 	return linkDTOs, total, isLast, nil
 }
+
+func (lk *linkService) DeleteById(ctx context.Context, id uuid.UUID) error {
+	err := lk.repo.DeleteById(ctx, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

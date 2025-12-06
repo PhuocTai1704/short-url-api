@@ -184,3 +184,50 @@ func (h *LinkHandler) Redirect(ctx *gin.Context) {
 	// Redirect 301 hoặc 302
 	ctx.Redirect(http.StatusFound, url)
 }
+
+// DeleteById godoc
+// @Summary      Xóa link theo ID
+// @Description  Xóa một link dựa trên linkID và toàn bộ dữ liệu liên quan (như clicks)
+// @Tags         links
+// @Param        id   path      string  true  "Link ID (UUID)"
+// @Produce      json
+// @Success      204  "No Content"
+// @Failure      400  {object}  response.ErrorResponse "ID không hợp lệ hoặc thiếu ID"
+// @Failure      404  {object}  response.ErrorResponse "Không tìm thấy link"
+// @Failure      500  {object}  response.ErrorResponse "Lỗi hệ thống"
+// @Router       /links/{id} [delete]
+func (h *LinkHandler) DeleteById(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+
+	if idParam == "" {
+		ctx.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "id is required",
+		})
+		return
+	}
+
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "ID không hợp lệ",
+		})
+		return
+	}
+
+	err = h.service.DeleteById(ctx.Request.Context(), id)
+	if err != nil {
+		if err.Error() == "link not found" {
+			ctx.JSON(http.StatusNotFound, response.ErrorResponse{
+				Message: "link not found",
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+}

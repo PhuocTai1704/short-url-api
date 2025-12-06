@@ -190,6 +190,48 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Xóa một link dựa trên linkID và toàn bộ dữ liệu liên quan (như clicks)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Xóa link theo ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Link ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "ID không hợp lệ hoặc thiếu ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy link",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/{code}": {

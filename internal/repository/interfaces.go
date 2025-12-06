@@ -27,6 +27,8 @@ type LinkRepo interface {
 
 	GetLinkWithStatsById(ctx context.Context, id uuid.UUID) (*dto.LinkDTO, error) 
 
+	DeleteById(ctx context.Context, id uuid.UUID) error
+
 }
 
 type LinkClickRepo interface {
