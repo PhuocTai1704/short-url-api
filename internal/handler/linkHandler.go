@@ -20,17 +20,7 @@ func NewLinkHandler(service service.LinkService) *LinkHandler {
 	}
 }
 
-// @Summary Test API
-// @Description Test handler to check server
-// @Tags links
-// @Produce json
-// @Success 200 {object} map[string]string
-// @Router /links/test [get]
-func (h *LinkHandler) TestHandler(c *gin.Context) {
-    c.JSON(200, gin.H{
-        "message": "OK!",
-    })
-}
+
 /// @Summary Create a short link
 // @Description Generate a short URL from a long URL
 // @Tags links

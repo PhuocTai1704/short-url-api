@@ -163,19 +163,4 @@ paths:
       summary: Lấy thông tin link theo short Link
       tags:
       - links
-  /links/test:
-    get:
-      description: Test handler to check server
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Test API
-      tags:
-      - links
 swagger: "2.0"

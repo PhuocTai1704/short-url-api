@@ -160,29 +160,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/links/test": {
-            "get": {
-                "description": "Test handler to check server",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "links"
-                ],
-                "summary": "Test API",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/{code}": {
             "get": {
                 "description": "Nhận mã short link và redirect người dùng đến URL gốc",
