@@ -202,6 +202,63 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "description": "Cập nhật URL và alias của một link dựa theo linkID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Cập nhật link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Link ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dữ liệu cập nhật link",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RequestLink"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LinkDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "URL hoặc alias không hợp lệ",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Link không tồn tại",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Xóa một link dựa trên linkID và toàn bộ dữ liệu liên quan (như clicks)",
                 "produces": [

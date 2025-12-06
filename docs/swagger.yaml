@@ -191,6 +191,44 @@ paths:
       summary: Lấy thông tin link theo linkID
       tags:
       - links
+    put:
+      consumes:
+      - application/json
+      description: Cập nhật URL và alias của một link dựa theo linkID
+      parameters:
+      - description: Link ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dữ liệu cập nhật link
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.RequestLink'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LinkDTO'
+        "400":
+          description: URL hoặc alias không hợp lệ
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Link không tồn tại
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Lỗi hệ thống
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Cập nhật link
+      tags:
+      - links
   /links/link:
     get:
       consumes:

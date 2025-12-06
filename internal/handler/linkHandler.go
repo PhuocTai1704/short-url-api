@@ -51,6 +51,48 @@ func (h *LinkHandler) CreateLink(c *gin.Context) {
 	c.JSON(http.StatusCreated, linkDTO)
 }
 
+// UpdateLink godoc
+// @Summary      Cập nhật link
+// @Description  Cập nhật URL và alias của một link dựa theo linkID
+// @Tags         links
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string  true  "Link ID (UUID)"
+// @Param        body  body      request.RequestLink  true  "Dữ liệu cập nhật link"
+// @Success      200   {object}  dto.LinkDTO
+// @Failure      400   {object}  response.ErrorResponse "URL hoặc alias không hợp lệ"
+// @Failure      404   {object}  response.ErrorResponse "Link không tồn tại"
+// @Failure      500   {object}  response.ErrorResponse "Lỗi hệ thống"
+// @Router       /links/{id} [put]
+func (h *LinkHandler) UpdateLink(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+	linkID, err := uuid.Parse(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "ID không hợp lệ",
+		})
+		return
+	}
+
+	var req request.RequestLink
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "Dữ liệu không hợp lệ",
+		})
+		return
+	}
+
+	updatedLink, err := h.service.UpdateLink(ctx.Request.Context(), linkID, req.Url, req.Alias)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, updatedLink)
+}
+
 // GetByLink godoc
 // @Summary      Lấy thông tin link theo linkID
 // @Description  Trả về thông tin chi tiết của link dựa vào linkID

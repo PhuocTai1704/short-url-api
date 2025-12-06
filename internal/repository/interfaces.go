@@ -11,7 +11,11 @@ import (
 type LinkRepo interface {
 	IsCodeExist(ctx context.Context, code string) (bool, error)
 
+	IsCodeExistNotId(ctx context.Context, linkId uuid.UUID, code string) (bool, error)
+
 	Create(ctx context.Context, link *model.Link) error
+
+	Update(ctx context.Context, link *model.Link) error
 
 	FirstOrCreate(ctx context.Context, link *model.Link) error
 
@@ -23,12 +27,11 @@ type LinkRepo interface {
 
 	IncreaseClick(ctx context.Context, id uuid.UUID) error
 
-	GetLinkWithStatsByLink(ctx context.Context,urlLink string) (*dto.LinkDTO, error)
+	GetLinkWithStatsByLink(ctx context.Context, urlLink string) (*dto.LinkDTO, error)
 
-	GetLinkWithStatsById(ctx context.Context, id uuid.UUID) (*dto.LinkDTO, error) 
+	GetLinkWithStatsById(ctx context.Context, id uuid.UUID) (*dto.LinkDTO, error)
 
 	DeleteById(ctx context.Context, id uuid.UUID) error
-
 }
 
 type LinkClickRepo interface {

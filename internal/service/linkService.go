@@ -105,6 +105,41 @@ func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.L
 		CreatedAt: link.CreatedAt,
 	}, nil
 }
+func (lk *linkService) UpdateLink(ctx context.Context, linkId uuid.UUID, url string, alias string) (dto.LinkDTO, error) {
+	domain := os.Getenv("DOMAIN_SHORT")
+	if !utils.ValidateURL(url) {
+		return dto.LinkDTO{}, fmt.Errorf("url không hợp lệ")
+	}
+	if len(alias) < 5 {
+		return dto.LinkDTO{}, fmt.Errorf("alias phải có ít nhất 5 ký tự")
+	}
+	exists, err := lk.repo.IsCodeExistNotId(ctx, linkId, alias)
+	if err != nil {
+		return dto.LinkDTO{}, err
+	}
+	if exists {
+		return dto.LinkDTO{}, fmt.Errorf("alias '%s' đã tồn tại", alias)
+	}
+	link := model.Link{
+		ID:   linkId,
+		Url:  url,
+		Code: alias,
+		Link: domain + alias,
+	}
+	err = lk.repo.Update(ctx, &link)
+	if err != nil {
+		return dto.LinkDTO{}, err
+	}
+
+	// Chỉ return 1 lần ở cuối
+	return dto.LinkDTO{
+		ID:        link.ID,
+		Url:       link.Url,
+		Code:      link.Code,
+		Link:      link.Link,
+		CreatedAt: link.CreatedAt,
+	}, nil
+}
 
 func (lk *linkService) GetById(ctx context.Context, id uuid.UUID) (dto.LinkDTO, error) {
 	link, err := lk.repo.GetLinkWithStatsById(ctx, id)

@@ -25,6 +25,7 @@ func (ur *LinkRoutes) Register(r *gin.RouterGroup) {
 		links.GET("/:id", ur.handler.GetById)
 		links.GET("/link", ur.handler.GetByLink)
 		links.POST("", ur.handler.CreateLink)
+		links.PUT("/:id", ur.handler.UpdateLink)
 		links.DELETE("/:id", ur.handler.DeleteById)
 	}
 }

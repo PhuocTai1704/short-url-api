@@ -34,10 +34,44 @@ func (r *SQLLinkRepo) IsCodeExist(ctx context.Context, code string) (bool, error
 	return true, nil
 }
 
+func (r *SQLLinkRepo) IsCodeExistNotId(ctx context.Context, linkId uuid.UUID, code string) (bool, error) {
+	var link model.Link
+	err := r.db.Where("code = ? AND link_id != ?", code, linkId).Take(&link).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
 func (r *SQLLinkRepo) Create(ctx context.Context, link *model.Link) error {
 	if err := r.db.WithContext(ctx).Create(link).Error; err != nil {
 		return err
 	}
+	return nil
+}
+
+func (r *SQLLinkRepo) Update(ctx context.Context, link *model.Link) error {
+
+	result := r.db.WithContext(ctx).
+		Model(&model.Link{}).
+		Where("link_id = ?", link.ID).
+		Updates(map[string]interface{}{
+			"url":  link.Url,
+			"code": link.Code,
+			"link": link.Link,
+		})
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("link not found by ID")
+	}
+
 	return nil
 }
 
