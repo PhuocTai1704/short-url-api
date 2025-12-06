@@ -24,6 +24,9 @@ type LinkRepo interface {
 	IncreaseClick(ctx context.Context, id uuid.UUID) error
 
 	GetLinkWithStatsByLink(ctx context.Context,urlLink string) (*dto.LinkDTO, error)
+
+	GetLinkWithStatsById(ctx context.Context, id uuid.UUID) (*dto.LinkDTO, error) 
+
 }
 
 type LinkClickRepo interface {

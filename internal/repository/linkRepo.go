@@ -140,3 +140,34 @@ func (r *SQLLinkRepo) GetLinkWithStatsByLink(ctx context.Context, urlLink string
 
 	return &dto, nil
 }
+
+func (r *SQLLinkRepo) GetLinkWithStatsById(ctx context.Context, id uuid.UUID) (*dto.LinkDTO, error) {
+	var dto dto.LinkDTO
+
+	tx := r.db.
+		WithContext(ctx).
+		Table("links AS l").
+		Select(`
+            l.link_id AS id,
+            l.url,
+            l.code,
+            l.link,
+            l.created_at,
+            COUNT(c.id) AS clicks,
+            MAX(c.clicked_at) AS last_click
+        `).
+		Joins("LEFT JOIN link_clicks AS c ON c.link_id = l.link_id").
+		Where("l.link_id = ?", id).
+		Group("l.link_id").
+		Scan(&dto)
+
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return nil, fmt.Errorf("url không tồn tại")
+	}
+
+	return &dto, nil
+}

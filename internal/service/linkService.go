@@ -11,6 +11,7 @@ import (
 	"short-url-api/internal/repository"
 	"short-url-api/internal/utils"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -103,6 +104,15 @@ func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.L
 		LastClick: link.LastClick,
 		CreatedAt: link.CreatedAt,
 	}, nil
+}
+
+func (lk *linkService) GetById(ctx context.Context, id uuid.UUID) (dto.LinkDTO, error) {
+	link, err := lk.repo.GetLinkWithStatsById(ctx, id)
+	if err != nil {
+		return dto.LinkDTO{}, err
+	}
+
+	return *link, nil
 }
 
 func (lk *linkService) GetByLink(ctx context.Context, urlLink string) (dto.LinkDTO, error) {

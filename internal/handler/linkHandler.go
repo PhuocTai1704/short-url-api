@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type LinkHandler struct {
@@ -48,6 +49,37 @@ func (h *LinkHandler) CreateLink(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, linkDTO)
+}
+
+// GetByLink godoc
+// @Summary      Lấy thông tin link theo linkID
+// @Description  Trả về thông tin chi tiết của link dựa vào linkID
+// @Tags         links
+// @Accept       json
+// @Produce      json
+// @Param        id   path     string  true   "Link ID"
+// @Success      200   {object}  dto.LinkDTO
+// @Failure      400   {object}  response.ErrorResponse
+// @Failure      404   {object}  response.ErrorResponse
+// @Router       /links/{id} [get]
+func (h *LinkHandler) GetById(c *gin.Context) {
+	id := c.Param("id")
+	linkId, err := uuid.Parse(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "ID không hợp lệ",
+		})
+		return
+	}
+	linkDTO, err := h.service.GetById(c.Request.Context(), linkId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, linkDTO)
 }
 
 // GetByLink godoc
