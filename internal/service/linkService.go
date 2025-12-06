@@ -103,20 +103,12 @@ func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.L
 }
 
 func (lk *linkService) GetByLink(ctx context.Context, urlLink string) (dto.LinkDTO, error) {
-	link, err := lk.repo.GetByLink(ctx, urlLink)
+	link, err := lk.repo.GetLinkWithStatsByLink(ctx, urlLink)
 	if err != nil {
 		return dto.LinkDTO{}, err
 	}
 
-	return dto.LinkDTO{
-		ID:        link.ID,
-		Url:       link.Url,
-		Code:      link.Code,
-		Link:      link.Link,
-		Clicks:    link.Clicks,
-		LastClick: link.LastClick,
-		CreatedAt: link.CreatedAt,
-	}, nil
+	return *link, nil
 }
 
 func (lk *linkService) GetUrlByCode(ctx context.Context, code string, req *http.Request) (string, error) {
