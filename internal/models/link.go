@@ -4,12 +4,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 
 type Link struct {
-    ID        uuid.UUID `json:"linkId" gorm:"column:link_id;type:char(36);primaryKey"`
+    ID        uuid.UUID `gorm:"column:link_id;type:char(36);primaryKey;default:(UUID())"` 
 
     Url       string    `json:"url" gorm:"not null"`
     Code      string    `json:"code" gorm:"unique;not null"`
@@ -18,11 +17,9 @@ type Link struct {
     Clicks    uint64     `json:"clicks" gorm:"default:0"`
     LastClick *time.Time `json:"lastClick"`
 
-    CreatedAt time.Time
+    CreatedAt time.Time  `gorm:"autoCreateTime"`
+
+    LinkClicks []LinkClick `gorm:"foreignKey:LinkID;constraint:OnDelete:CASCADE" json:"-"`
 }
 
-// Auto-generate UUID on create
-func (l *Link) BeforeCreate(tx *gorm.DB) (err error) {
-    l.ID = uuid.New()
-    return
-}
+

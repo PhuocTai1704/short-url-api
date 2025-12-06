@@ -54,7 +54,7 @@ func InitDB() error {
 
 	log.Println("Connected to MySQL successfully!")
 
-	if err := DB.AutoMigrate(&model.Link{}); err != nil {
+	if err := DB.AutoMigrate(&model.Link{}, &model.LinkClick{}); err != nil {
 		return fmt.Errorf("failed to migrate DB: %w", err)
 	}
 
