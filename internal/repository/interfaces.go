@@ -23,3 +23,9 @@ type LinkRepo interface {
 
 	IncreaseClick(ctx context.Context, id uuid.UUID) error
 }
+
+type LinkClickRepo interface{
+
+	Create(ctx context.Context,linkClick *model.LinkClick) error
+	
+}

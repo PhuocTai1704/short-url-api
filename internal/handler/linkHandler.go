@@ -20,8 +20,7 @@ func NewLinkHandler(service service.LinkService) *LinkHandler {
 	}
 }
 
-
-/// @Summary Create a short link
+// / @Summary Create a short link
 // @Description Generate a short URL from a long URL
 // @Tags links
 // @Accept json
@@ -32,23 +31,23 @@ func NewLinkHandler(service service.LinkService) *LinkHandler {
 // @Failure 500 {object} map[string]string
 // @Router /links [post]
 func (h *LinkHandler) CreateLink(c *gin.Context) {
-    var rq request.RequestLink
-    if err := c.ShouldBindJSON(&rq); err != nil {
-        c.JSON(http.StatusBadRequest, response.ErrorResponse{
-            Message: err.Error(),
-        })
-        return
-    }
+	var rq request.RequestLink
+	if err := c.ShouldBindJSON(&rq); err != nil {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
 
-    linkDTO, err := h.service.CreateLink(c.Request.Context(), rq.Url,rq.Alias)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, response.ErrorResponse{
-            Message: err.Error(),
-        })
-        return
-    }
+	linkDTO, err := h.service.CreateLink(c.Request.Context(), rq.Url, rq.Alias)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
 
-    c.JSON(http.StatusCreated, linkDTO)
+	c.JSON(http.StatusCreated, linkDTO)
 }
 
 // GetByLink godoc
@@ -63,26 +62,25 @@ func (h *LinkHandler) CreateLink(c *gin.Context) {
 // @Failure      404   {object}  response.ErrorResponse
 // @Router       /links/link [get]
 func (h *LinkHandler) GetByLink(c *gin.Context) {
-    urlLink := c.Query("url")  // lấy ?url=
+	urlLink := c.Query("url") // lấy ?url=
 
-    if urlLink == "" {
-        c.JSON(http.StatusBadRequest, response.ErrorResponse{
-            Message: "url query param is required",
-        })
-        return
-    }
+	if urlLink == "" {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "url query param is required",
+		})
+		return
+	}
 
-    linkDTO, err := h.service.GetByLink(c.Request.Context(), urlLink)
-    if err != nil {
-        c.JSON(http.StatusNotFound, response.ErrorResponse{
-            Message: err.Error(),
-        })
-        return
-    }
+	linkDTO, err := h.service.GetByLink(c.Request.Context(), urlLink)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
 
-    c.JSON(http.StatusOK, linkDTO)
+	c.JSON(http.StatusOK, linkDTO)
 }
-
 
 // GetAllLinks godoc
 // @Summary      Lấy danh sách link
@@ -97,39 +95,39 @@ func (h *LinkHandler) GetByLink(c *gin.Context) {
 // @Failure      500    {object}  response.ErrorResponse
 // @Router       /links [get]
 func (h *LinkHandler) GetAllLinks(c *gin.Context) {
-    ctx := c.Request.Context()
+	ctx := c.Request.Context()
 
-    page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
-    if err != nil || page <= 0 {
-        c.JSON(http.StatusBadRequest, response.ErrorResponse{
-            Message: "invalid page",
-        })
-        return
-    }
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page <= 0 {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "invalid page",
+		})
+		return
+	}
 
-    limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
-    if err != nil || limit <= 0 {
-        c.JSON(http.StatusBadRequest, response.ErrorResponse{
-            Message: "invalid limit",
-        })
-        return
-    }
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "invalid limit",
+		})
+		return
+	}
 
-    links, total, isLast, err := h.service.GetAllLinks(ctx, page, limit)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, response.ErrorResponse{
-            Message: err.Error(),
-        })
-        return
-    }
+	links, total, isLast, err := h.service.GetAllLinks(ctx, page, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
 
-    c.JSON(http.StatusOK, response.LinkResponse{
-        Data:       links,
-        Total:      total,
-        Page:       page,
-        Limit:      limit,
-        IsLastPage: isLast,
-    })
+	c.JSON(http.StatusOK, response.LinkResponse{
+		Data:       links,
+		Total:      total,
+		Page:       page,
+		Limit:      limit,
+		IsLastPage: isLast,
+	})
 }
 
 // Redirect godoc
@@ -143,11 +141,11 @@ func (h *LinkHandler) GetAllLinks(c *gin.Context) {
 func (h *LinkHandler) Redirect(ctx *gin.Context) {
 	code := ctx.Param("code")
 
-	url, err := h.service.GetUrlByCode(ctx.Request.Context(), code)
+	url, err := h.service.GetUrlByCode(ctx.Request.Context(), code, ctx.Request)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound,response.ErrorResponse{
-            Message: "Short link not found",
-        })
+		ctx.JSON(http.StatusNotFound, response.ErrorResponse{
+			Message: "Short link not found",
+		})
 		return
 	}
 

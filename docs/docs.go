@@ -76,7 +76,6 @@ const docTemplate = `{
                 "tags": [
                     "links"
                 ],
-                "summary": "Create a short link",
                 "parameters": [
                     {
                         "description": "URL to shorten",

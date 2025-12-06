@@ -26,16 +26,23 @@ func main() {
 		log.Fatalf("Failed to connect to DB: %v", err)
 	}
 
+	// Tạo các repo
 	linkRepo := repository.NewSQLLinkRepo(db.DB)
+	linkClickRepo := repository.NewSQLLinkClickRepo(db.DB)
 
-	linkService := service.NewLinkService(linkRepo)
+	// Tạo service cho LinkClick trước
+	linkClickService := service.NewLinkClickService(linkClickRepo)
 
+	// Tạo service cho Link, truyền LinkRepo và LinkClickService
+	linkService := service.NewLinkService(linkRepo, linkClickService)
+
+	// Tạo handler
 	linkHandler := handler.NewLinkHandler(linkService)
 
 	r := gin.Default()
 	r.Use(cors.Default())
 
-    r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Register routes
 	routes.RegisterRoutes(

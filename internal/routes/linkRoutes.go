@@ -21,8 +21,8 @@ func (ur *LinkRoutes) Register(r *gin.RouterGroup) {
 
 	links := r.Group("/links")
 	{
-		links.GET("",ur.handler.GetAllLinks)
-		links.GET("/link",ur.handler.GetByLink)
-		links.POST("",ur.handler.CreateLink)
+		links.GET("", ur.handler.GetAllLinks)
+		links.GET("/link", ur.handler.GetByLink)
+		links.POST("", ur.handler.CreateLink)
 	}
 }

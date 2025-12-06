@@ -131,7 +131,6 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create a short link
       tags:
       - links
   /links/link:

@@ -99,6 +99,7 @@ func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model
 }
 
 func (r *SQLLinkRepo) IncreaseClick(ctx context.Context, id uuid.UUID) error {
+    r.db.WithContext(ctx)
     return r.db.WithContext(ctx).
         Model(&model.Link{}).
         Where("link_id = ?", id).
