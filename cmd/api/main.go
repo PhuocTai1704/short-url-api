@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"short-url-api/internal/db"
 	"short-url-api/internal/handler"
@@ -50,7 +51,11 @@ func main() {
 		routes.NewLinkRoutes(linkHandler),
 	)
 
-	if err := r.Run(":8080"); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // default port
+	}
+	if err := r.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

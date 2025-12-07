@@ -22,7 +22,7 @@ func NewLinkHandler(service service.LinkService) *LinkHandler {
 	}
 }
 
-// / @Summary Create a short link
+// @Summary Create a short link
 // @Description Generate a short URL from a long URL
 // @Tags links
 // @Accept json
