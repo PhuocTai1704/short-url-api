@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"net/url"
 	"os"
@@ -37,7 +38,7 @@ func GenerateShortCode(length int) (string, error) {
 }
 
 func ValidateURL(input string) bool {
-	domain := os.Getenv("DOMAIN_SHORT")
+	baseUrl := fmt.Sprintf("%s://%s:%s/", os.Getenv("PROTOCOL"), os.Getenv("DOMAIN_SHORT"), os.Getenv("PORT"))
 
 	input = strings.TrimSpace(input)
 	if input == "" {
@@ -45,7 +46,7 @@ func ValidateURL(input string) bool {
 	}
 
 	// Không cho phép rút gọn URL của chính hệ thống
-	if strings.HasPrefix(input, domain) {
+	if strings.HasPrefix(input, baseUrl) {
 		return false
 	}
 

@@ -27,7 +27,7 @@ func NewLinkService(repo repository.LinkRepo, linkClickSvc LinkClickService) Lin
 }
 
 // Tạo link với alias do user truyền
-func (lk *linkService) createWithAlias(ctx context.Context, link *model.Link, alias, domain string) error {
+func (lk *linkService) createWithAlias(ctx context.Context, link *model.Link, alias, baseUrl string) error {
 	if len(alias) < 5 {
 		return fmt.Errorf("alias phải có ít nhất 5 ký tự")
 	}
@@ -41,13 +41,13 @@ func (lk *linkService) createWithAlias(ctx context.Context, link *model.Link, al
 	}
 
 	link.Code = alias
-	link.Link = domain + alias
+	link.Link = baseUrl + alias
 
 	return lk.repo.Create(ctx, link)
 }
 
 // Tạo link với code tự sinh
-func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, domain string) error {
+func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, baseUrl string) error {
 	k := 8
 
 	for attempts := 0; attempts < 5; attempts++ {
@@ -65,7 +65,7 @@ func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, dom
 		// Nếu code chưa tồn tại -> Tạo link
 		if !exists {
 			link.Code = code
-			link.Link = domain + code
+			link.Link = baseUrl + code
 			return lk.repo.Create(ctx, link)
 		}
 
@@ -75,7 +75,7 @@ func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, dom
 }
 
 func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.LinkDTO, error) {
-	domain := os.Getenv("DOMAIN_SHORT")
+	baseUrl := fmt.Sprintf("%s://%s:%s/", os.Getenv("PROTOCOL"), os.Getenv("DOMAIN_SHORT"), os.Getenv("PORT"))
 	if !utils.ValidateURL(url) {
 		return dto.LinkDTO{}, fmt.Errorf("url không hợp lệ")
 	}
@@ -83,11 +83,11 @@ func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.L
 	link.Url = url
 
 	if alias != "" {
-		if err := lk.createWithAlias(ctx, &link, alias, domain); err != nil {
+		if err := lk.createWithAlias(ctx, &link, alias, baseUrl); err != nil {
 			return dto.LinkDTO{}, err
 		}
 	} else {
-		if err := lk.createAutoCode(ctx, &link, domain); err != nil {
+		if err := lk.createAutoCode(ctx, &link, baseUrl); err != nil {
 			return dto.LinkDTO{}, err
 		}
 	}
@@ -104,7 +104,7 @@ func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.L
 	}, nil
 }
 func (lk *linkService) UpdateLink(ctx context.Context, linkId uuid.UUID, url string, alias string) (dto.LinkDTO, error) {
-	domain := os.Getenv("DOMAIN_SHORT")
+	baseUrl := fmt.Sprintf("%s://%s:%s/", os.Getenv("PROTOCOL"), os.Getenv("DOMAIN_SHORT"), os.Getenv("PORT"))
 	if !utils.ValidateURL(url) {
 		return dto.LinkDTO{}, fmt.Errorf("url không hợp lệ")
 	}
@@ -122,7 +122,7 @@ func (lk *linkService) UpdateLink(ctx context.Context, linkId uuid.UUID, url str
 		ID:   linkId,
 		Url:  url,
 		Code: alias,
-		Link: domain + alias,
+		Link: baseUrl + alias,
 	}
 	err = lk.repo.Update(ctx, &link)
 	if err != nil {
