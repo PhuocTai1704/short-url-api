@@ -23,9 +23,9 @@ type LinkRepo interface {
 
 	GetByCode(ctx context.Context, code string) (*model.Link, error)
 
-	GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error)
+	ExistsByCode(ctx context.Context, code string) (bool, error)
 
-	IncreaseClick(ctx context.Context, id uuid.UUID) error
+	GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error)
 
 	GetLinkWithStatsByLink(ctx context.Context, urlLink string) (*dto.LinkDTO, error)
 

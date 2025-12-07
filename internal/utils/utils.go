@@ -1,7 +1,8 @@
 package utils
 
 import (
-	"crypto/sha1"
+	"crypto/rand"
+	"math/big"
 	"net/url"
 	"os"
 	"strings"
@@ -15,17 +16,23 @@ func GetEnv(key, defaultValue string) string {
 	return defaultValue
 }
 
-// Base62 charset
-var base62chars = []rune("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+const base62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-// DeterministicShort generates the same short code for the same URL
-func DeterministicShort(url string, length int) string {
-	h := sha1.Sum([]byte(url)) // SHA1 hash URL
-	code := ""
+var base62Len = big.NewInt(int64(len(base62)))
+
+func GenerateShortCode(length int) (string, error) {
+	result := make([]byte, length)
+
 	for i := 0; i < length; i++ {
-		code += string(base62chars[h[i]%62])
+		num, err := rand.Int(rand.Reader, base62Len)
+		if err != nil {
+			return "", err
+		}
+
+		result[i] = base62[num.Int64()]
 	}
-	return code
+
+	return string(result), nil
 }
 
 func ValidateURL(input string) bool {

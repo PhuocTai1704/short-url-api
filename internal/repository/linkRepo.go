@@ -6,7 +6,6 @@ import (
 	"fmt"
 	model "short-url-api/internal/models"
 	"short-url-api/internal/payloads/dto"
-	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -112,6 +111,20 @@ func (r *SQLLinkRepo) GetByCode(ctx context.Context, code string) (*model.Link, 
 	return &link, nil
 }
 
+func (r *SQLLinkRepo) ExistsByCode(ctx context.Context, code string) (bool, error) {
+	var exists bool
+
+	err := r.db.WithContext(ctx).
+		Raw("SELECT EXISTS (SELECT 1 FROM links WHERE code = ?)", code).
+		Scan(&exists).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
 func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) {
 	var links []model.Link
 	var total int64
@@ -132,17 +145,6 @@ func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model
 	}
 
 	return links, total, nil
-}
-
-func (r *SQLLinkRepo) IncreaseClick(ctx context.Context, id uuid.UUID) error {
-	r.db.WithContext(ctx)
-	return r.db.WithContext(ctx).
-		Model(&model.Link{}).
-		Where("link_id = ?", id).
-		Updates(map[string]any{
-			"clicks":     gorm.Expr("clicks + 1"),
-			"last_click": time.Now(),
-		}).Error
 }
 
 func (r *SQLLinkRepo) GetLinkWithStatsByLink(ctx context.Context, urlLink string) (*dto.LinkDTO, error) {

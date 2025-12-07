@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,7 +11,6 @@ import (
 	"short-url-api/internal/utils"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type linkService struct {
@@ -48,32 +46,31 @@ func (lk *linkService) createWithAlias(ctx context.Context, link *model.Link, al
 }
 
 // Tạo link với code tự sinh
-func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, url, domain string) error {
+func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, domain string) error {
 	k := 8
-	code := utils.DeterministicShort(url, k)
-	maxAttempts := 10
 
-	for i := 0; i < maxAttempts; i++ {
-		linkCheck, err := lk.repo.GetByCode(ctx, code)
+	for attempts := 0; attempts < 5; attempts++ {
+
+		code, err := utils.GenerateShortCode(k)
 		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				link.Code = code
-				link.Link = domain + code
-				return lk.repo.Create(ctx, link)
-			}
 			return err
 		}
 
-		if linkCheck.Url == url {
-			*link = *linkCheck
-			return nil
+		exists, err := lk.repo.ExistsByCode(ctx, code)
+		if err != nil {
+			return err
 		}
 
-		k++
-		code = utils.DeterministicShort(url, k)
+		// Nếu code chưa tồn tại -> Tạo link
+		if !exists {
+			link.Code = code
+			link.Link = domain + code
+			return lk.repo.Create(ctx, link)
+		}
+
 	}
 
-	return fmt.Errorf("không tạo được short code sau %d lần thử", maxAttempts)
+	return fmt.Errorf("tạo short code thất bại: không tìm được mã hợp lệ")
 }
 
 func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.LinkDTO, error) {
@@ -89,7 +86,7 @@ func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.L
 			return dto.LinkDTO{}, err
 		}
 	} else {
-		if err := lk.createAutoCode(ctx, &link, url, domain); err != nil {
+		if err := lk.createAutoCode(ctx, &link, domain); err != nil {
 			return dto.LinkDTO{}, err
 		}
 	}

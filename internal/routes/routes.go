@@ -8,7 +8,6 @@ type Route interface {
 
 func RegisterRoutes(r *gin.Engine, routes ...Route) {
 	
-	// api := r.Group("/api/")
 	api := r.Group("")
 
 	for _, route := range routes {
