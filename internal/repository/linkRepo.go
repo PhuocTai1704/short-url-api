@@ -6,6 +6,7 @@ import (
 	"fmt"
 	model "short-url-api/internal/models"
 	"short-url-api/internal/payloads/dto"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -125,22 +126,28 @@ func (r *SQLLinkRepo) ExistsByCode(ctx context.Context, code string) (bool, erro
 	return exists, nil
 }
 
-func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error) {
+func (r *SQLLinkRepo) GetAllLinks(ctx context.Context, page, limit int, startDate, endDate *time.Time) ([]model.Link, int64, error) {
 	var links []model.Link
 	var total int64
 
-	if err := r.db.WithContext(ctx).
-		Model(&model.Link{}).
-		Count(&total).Error; err != nil {
+	db := r.db.WithContext(ctx).Model(&model.Link{})
+
+	// Áp dụng filter nếu có
+	if startDate != nil {
+		db = db.Where("created_at >= ?", *startDate)
+	}
+	if endDate != nil {
+		db = db.Where("created_at <= ?", *endDate)
+	}
+
+	if err := db.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
+	// Pagination
 	offset := (page - 1) * limit
 
-	if err := r.db.WithContext(ctx).
-		Limit(limit).
-		Offset(offset).
-		Find(&links).Error; err != nil {
+	if err := db.Limit(limit).Offset(offset).Find(&links).Error; err != nil {
 		return nil, 0, err
 	}
 

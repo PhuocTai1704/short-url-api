@@ -5,6 +5,7 @@ import (
 	"short-url-api/internal/payloads/request"
 	"short-url-api/internal/payloads/response"
 	"short-url-api/internal/service"
+	"short-url-api/internal/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -158,40 +159,50 @@ func (h *LinkHandler) GetByLink(c *gin.Context) {
 
 // GetAllLinks godoc
 // @Summary      Lấy danh sách link
-// @Description  Lấy danh sách link theo phân trang
+// @Description  Lấy danh sách link theo phân trang và filter theo ngày (tuỳ chọn)
 // @Tags         links
 // @Accept       json
 // @Produce      json
-// @Param        page   query     int     false  "Trang hiện tại"      default(1)
-// @Param        limit  query     int     false  "Số item mỗi trang"   default(10)
-// @Success      200    {object}  response.LinkResponse
-// @Failure      400    {object}  response.ErrorResponse
-// @Failure      500    {object}  response.ErrorResponse
+// @Param        page        query     int     false  "Trang hiện tại"         default(1)
+// @Param        limit       query     int     false  "Số item mỗi trang"      default(10)
+// @Param        start_date  query     string  false  "Ngày bắt đầu lọc (YYYY-MM-DD)"
+// @Param        end_date    query     string  false  "Ngày kết thúc lọc (YYYY-MM-DD)"
+// @Success      200         {object}  response.LinkResponse
+// @Failure      400         {object}  response.ErrorResponse
+// @Failure      500         {object}  response.ErrorResponse
 // @Router       /links [get]
 func (h *LinkHandler) GetAllLinks(c *gin.Context) {
 	ctx := c.Request.Context()
 
+	// page
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil || page <= 0 {
-		c.JSON(http.StatusBadRequest, response.ErrorResponse{
-			Message: "invalid page",
-		})
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{Message: "invalid page"})
 		return
 	}
 
+	// limit
 	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	if err != nil || limit <= 0 {
-		c.JSON(http.StatusBadRequest, response.ErrorResponse{
-			Message: "invalid limit",
-		})
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{Message: "invalid limit"})
+		return
+	}
+	// Parse start_date query parameter
+	startDate, err := utils.ParseOptionalDate(c.Query("start_date"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{Message: "invalid start_date format"})
+		return
+	}
+	// Parse end_date query parameter
+	endDate, err := utils.ParseOptionalDate(c.Query("end_date"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{Message: "invalid end_date format"})
 		return
 	}
 
-	links, total, isLast, err := h.service.GetAllLinks(ctx, page, limit)
+	links, total, isLast, err := h.service.GetAllLinks(ctx, page, limit, startDate, endDate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, response.ErrorResponse{
-			Message: err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, response.ErrorResponse{Message: err.Error()})
 		return
 	}
 

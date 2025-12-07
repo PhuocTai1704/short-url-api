@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/links": {
             "get": {
-                "description": "Lấy danh sách link theo phân trang",
+                "description": "Lấy danh sách link theo phân trang và filter theo ngày (tuỳ chọn)",
                 "consumes": [
                     "application/json"
                 ],
@@ -41,6 +41,18 @@ const docTemplate = `{
                         "default": 10,
                         "description": "Số item mỗi trang",
                         "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ngày bắt đầu lọc (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ngày kết thúc lọc (YYYY-MM-DD)",
+                        "name": "end_date",
                         "in": "query"
                     }
                 ],

@@ -4,6 +4,7 @@ import (
 	"context"
 	model "short-url-api/internal/models"
 	"short-url-api/internal/payloads/dto"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -25,7 +26,7 @@ type LinkRepo interface {
 
 	ExistsByCode(ctx context.Context, code string) (bool, error)
 
-	GetAllLinks(ctx context.Context, page, limit int) ([]model.Link, int64, error)
+	GetAllLinks(ctx context.Context, page, limit int, startDate, endDate *time.Time) ([]model.Link, int64, error)
 
 	GetLinkWithStatsByLink(ctx context.Context, urlLink string) (*dto.LinkDTO, error)
 

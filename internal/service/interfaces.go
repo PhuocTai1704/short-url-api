@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"short-url-api/internal/payloads/dto"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +20,7 @@ type LinkService interface {
 
 	GetUrlByCode(ctx context.Context, code string, req *http.Request) (string, error)
 
-	GetAllLinks(ctx context.Context, page, limit int) ([]dto.LinkDTO, int64, bool, error)
+	GetAllLinks(ctx context.Context, page, limit int, startDate, endDate *time.Time) ([]dto.LinkDTO, int64, bool, error)
 
 	DeleteById(ctx context.Context, id uuid.UUID) error
 }

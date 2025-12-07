@@ -9,6 +9,7 @@ import (
 	"short-url-api/internal/payloads/dto"
 	"short-url-api/internal/repository"
 	"short-url-api/internal/utils"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -171,9 +172,9 @@ func (lk *linkService) GetUrlByCode(ctx context.Context, code string, req *http.
 	return link.Url, nil
 }
 
-func (lk *linkService) GetAllLinks(ctx context.Context, page, limit int) ([]dto.LinkDTO, int64, bool, error) {
+func (lk *linkService) GetAllLinks(ctx context.Context, page, limit int, startDate, endDate *time.Time) ([]dto.LinkDTO, int64, bool, error) {
 
-	links, total, err := lk.repo.GetAllLinks(ctx, page, limit)
+	links, total, err := lk.repo.GetAllLinks(ctx, page, limit, startDate, endDate)
 	if err != nil {
 		return nil, 0, true, err
 	}

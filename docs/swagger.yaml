@@ -71,7 +71,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Lấy danh sách link theo phân trang
+      description: Lấy danh sách link theo phân trang và filter theo ngày (tuỳ chọn)
       parameters:
       - default: 1
         description: Trang hiện tại
@@ -83,6 +83,14 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Ngày bắt đầu lọc (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: Ngày kết thúc lọc (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
       produces:
       - application/json
       responses:
