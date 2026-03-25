@@ -75,7 +75,7 @@ func (lk *linkService) createAutoCode(ctx context.Context, link *model.Link, bas
 }
 
 func (lk *linkService) CreateLink(ctx context.Context, url, alias string) (dto.LinkDTO, error) {
-	baseUrl := fmt.Sprintf("%s://%s:/", os.Getenv("PROTOCOL"), os.Getenv("DOMAIN_SHORT"))
+	baseUrl := fmt.Sprintf("%s://%s/", os.Getenv("PROTOCOL"), os.Getenv("DOMAIN_SHORT"))
 	if !utils.ValidateURL(url) {
 		return dto.LinkDTO{}, fmt.Errorf("url không hợp lệ")
 	}
